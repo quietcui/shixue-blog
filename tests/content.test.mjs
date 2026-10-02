@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
+import {parsePost,renderMarkdown,loadPosts} from '../scripts/content.mjs';
+const front=(extra='',body='内容')=>`---\ntitle: 测试\ndate: '2026-10-02'\nslug: test\n${extra}\n---\n${body}`;
+test('invalid dates and traversal slugs fail before publish',()=>{assert.throws(()=>parsePost(front().replace('2026-10-02','2026-02-31'),'a.md'));assert.throws(()=>parsePost(front().replace('slug: test','slug: ../secret'),'a.md'));});
+test('drafts do not appear in the public content list',()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'shixue-'));try{fs.writeFileSync(dir+'/public.md',front());fs.writeFileSync(dir+'/private.md',front('draft: true'));assert.equal(loadPosts(dir).length,1);}finally{fs.rmSync(dir,{recursive:true});}});
+test('Markdown renders headings, tables, images and highlighted code safely',()=>{const r=renderMarkdown('## 标题\n\n**粗体**\n\n| a | b |\n| --- | --- |\n| 1 | 2 |\n\n![图片](images/test.png)\n\n```js\nconst a = 1;\n```\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))','/blog/');assert.equal(r.toc[0].id,'section-1');assert.match(r.html,/<table>/);assert.match(r.html,/src="\/blog\/images\/test.png"/);assert.match(r.html,/hljs-keyword/);assert.doesNotMatch(r.html,/<script|href="javascript:/);});

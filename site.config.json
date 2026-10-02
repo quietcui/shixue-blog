@@ -1,0 +1,9 @@
+{
+  "title": "拾学",
+  "subtitle": "我的学习博客",
+  "author": "quietcui",
+  "description": "学过的，想过的，都留在这里。记录学习笔记、实践心得与日常灵感。",
+  "githubRepository": "quietcui/shixue-blog",
+  "about": "我是 quietcui。这里是我的学习博客，记录知识、实践，也记录还没想明白的问题。希望每一次认真写下的内容，都能成为下一次探索的起点。",
+  "music": [{"title":"Carefree","artist":"Kevin MacLeod","src":"music/carefree.mp3","source":"https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037","license":"CC BY 4.0","licenseUrl":"https://creativecommons.org/licenses/by/4.0/"}]
+}
