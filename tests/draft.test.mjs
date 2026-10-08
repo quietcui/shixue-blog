@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {draftMarkdown,orderedSeries} from '../lib/draft.mjs';import {parsePost} from '../scripts/content.mjs';
+const form={title:'带有 "引号" 的笔记',category:'实践',date:'2026-10-08',tags:'公式，图片,编程',slug:'my-note',series:'入门',seriesOrder:'2',body:'## 正文\n\n![图](images/abc.png)\n\n$E=mc^2$'};
+test('export round trips multilingual metadata, series, image links and formulas',()=>{const post=parsePost(draftMarkdown(form),'my-note.md');assert.equal(post.title,form.title);assert.deepEqual(post.tags,['公式','图片','编程']);assert.equal(post.seriesOrder,2);assert.equal(post.draft,false);assert.match(post.body,/images\/abc.png/);assert.match(post.body,/\$E=mc\^2\$/);});
+test('export rejects invalid content before creating a publication file',()=>{for(const change of [{title:''},{body:''},{date:'2026-02-31'},{slug:'../secret'},{seriesOrder:'0'}])assert.throws(()=>draftMarkdown({...form,...change}));});
+test('series uses explicit order then dates and excludes drafts and other series',()=>{const rows=[{series:'入门',seriesOrder:3,date:'2026-01-01',slug:'third'},{series:'入门',seriesOrder:1,date:'2026-02-01',slug:'first'},{series:'入门',date:'2026-03-01',slug:'last'},{series:'入门',seriesOrder:2,draft:true},{series:'其他',seriesOrder:1}];assert.deepEqual(orderedSeries(rows,'入门').map(p=>p.slug),['first','third','last']);});
